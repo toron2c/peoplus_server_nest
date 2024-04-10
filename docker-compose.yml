@@ -29,7 +29,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     restart: always
-    container_name: nest-pgadmin4
+    container_name: nest-pgadmin4-graphql
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=greed

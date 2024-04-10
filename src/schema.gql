@@ -7,12 +7,32 @@ input AuthDto {
   password: String!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
 type Mutation {
   login(AuthDto: AuthDto!): User!
   registration(AuthDto: AuthDto!): User!
+  updateProfile(ProfileDto: ProfileDto!): Profile!
+}
+
+type Profile {
+  bio: String!
+  birthday: DateTime
+  id: Int!
+  name: String!
+}
+
+input ProfileDto {
+  bio: String!
+  birthday: DateTime!
+  name: String!
 }
 
 type Query {
+  getProfile(id: Int!): Profile!
   getUid(email: String!): User!
 }
 
@@ -22,7 +42,11 @@ type Tokens {
 }
 
 type User {
+  tokens: Tokens!
+  user: UserFields!
+}
+
+type UserFields {
   email: String!
   id: String!
-  tokens: Tokens!
 }

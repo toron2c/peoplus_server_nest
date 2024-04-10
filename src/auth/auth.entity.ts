@@ -6,13 +6,19 @@ export class Tokens {
   @Field()
   refreshToken: string;
 }
+@ObjectType()
+export class UserFields {
+  @Field()
+  email: string;
+
+  @Field()
+  id: string;
+}
 
 @ObjectType()
 export class User {
   @Field()
-  email: string;
-  @Field()
-  id: string;
+  user: UserFields;
   @Field()
   tokens: Tokens;
 }

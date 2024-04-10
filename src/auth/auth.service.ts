@@ -27,10 +27,16 @@ export class AuthService {
         password: await hash(dto.password),
       },
     });
+    // create profile in db
+    await this.prisma.profile.create({
+      data: {
+        userId: user.id,
+      },
+    });
     const tokens = await this.genTokens(user.id);
     const field = await this.getUserFields(user.id);
     return {
-      ...field,
+      user: field,
       tokens: tokens,
     };
   }
@@ -40,8 +46,9 @@ export class AuthService {
     if (await verify(user.password, dto.password)) {
       const tokens = await this.genTokens(user.id);
       const field = await this.getUserFields(user.id);
+
       return {
-        ...field,
+        user: field,
         tokens: tokens,
       };
     } else throw new BadRequestException("Wrong password or email");
@@ -53,7 +60,7 @@ export class AuthService {
     const user = await this.users.findUserWithId(res.id);
     const tokens = await this.genTokens(user.id);
     return {
-      ...(await this.getUserFields(user.id)),
+      user: await this.getUserFields(user.id),
       tokens: tokens,
     };
   }
