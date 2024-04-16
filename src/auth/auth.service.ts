@@ -28,9 +28,17 @@ export class AuthService {
       },
     });
     // create profile in db
-    await this.prisma.profile.create({
+    const profile = await this.prisma.profile.create({
       data: {
         userId: user.id,
+      },
+    });
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        profileId: profile.id,
       },
     });
     const tokens = await this.genTokens(user.id);
@@ -94,10 +102,6 @@ export class AuthService {
   }
 
   private async getUserFields(id: string) {
-    const user = await this.users.findUserWithId(id);
-    return {
-      id: user.id,
-      email: user.email,
-    };
+    return await this.users.findUserWithId(id);
   }
 }

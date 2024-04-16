@@ -1,7 +1,8 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Post } from "src/posts/entity/posts.entity";
 @ObjectType()
 export class Profile {
-  @Field(type => Int)
+  @Field(() => Int)
   id: number;
 
   @Field()
@@ -13,3 +14,8 @@ export class Profile {
   @Field({ nullable: true })
   birthday: Date | null;
 }
+
+// export class ProfileWithPosts extends Profile {
+//   @Field(() => [Post])
+//   posts: Post[];
+// }

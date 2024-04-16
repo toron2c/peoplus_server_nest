@@ -1,6 +1,6 @@
 import { Args, Int, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { UsersService } from "./users.service";
-import { Profile } from "./entity.ts/users.entity";
+import { Profile } from "./entity/users.entity";
 import { CurrentUser } from "src/auth/decorators/user.decorator";
 import { User } from "@prisma/client";
 import { Auth } from "src/auth/decorators/auth.decorator";

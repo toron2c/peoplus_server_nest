@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
-import { Profile } from "./entity.ts/users.entity";
+import { Profile } from "./entity/users.entity";
 import { UserFields } from "src/auth/auth.entity";
 import { User as UserModel } from "@prisma/client";
 import { ProfileDto } from "./dto/profile.dto";
@@ -26,6 +26,7 @@ export class UsersService {
         id: true,
         email: true,
         password: false,
+        profileId: true,
       },
     });
     return user;

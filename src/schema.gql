@@ -2,9 +2,22 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AllPostsDto {
+  authorId: Int!
+  page: Int
+}
+
 input AuthDto {
   email: String!
   password: String!
+}
+
+input ChangedStateLikeInput {
+  postId: Int!
+}
+
+type CountPosts {
+  count: Int!
 }
 
 """
@@ -13,9 +26,20 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 scalar DateTime
 
 type Mutation {
+  changeStatePostLikes(ChangedStateLikeInput: ChangedStateLikeInput!): Int!
+  createPost(NewPostInput: String!): Post!
   login(AuthDto: AuthDto!): User!
   registration(AuthDto: AuthDto!): User!
+  removePost(RemovePostInput: RemovePostInput!): Int!
+  updatePost(UpdatePostDto: UpdatePostInput!): Post!
   updateProfile(ProfileDto: ProfileDto!): Profile!
+}
+
+type Post {
+  createdAt: DateTime!
+  id: Int!
+  text: String!
+  updatedAt: DateTime
 }
 
 type Profile {
@@ -32,13 +56,24 @@ input ProfileDto {
 }
 
 type Query {
+  getCountPosts(AuthorId: Float!): CountPosts!
+  getPosts(AllPostsDto: AllPostsDto!): [Post!]!
   getProfile(id: Int!): Profile!
   getUid(email: String!): User!
+}
+
+input RemovePostInput {
+  postId: Int!
 }
 
 type Tokens {
   accessToken: String!
   refreshToken: String!
+}
+
+input UpdatePostInput {
+  postId: Int!
+  text: String!
 }
 
 type User {
@@ -49,4 +84,5 @@ type User {
 type UserFields {
   email: String!
   id: String!
+  profileId: Int!
 }
