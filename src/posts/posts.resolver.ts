@@ -73,4 +73,9 @@ export class PostsResolver {
     };
     return await this.postsService.changeLikesPost(data);
   }
+  @Query(() => Int)
+  @Auth()
+  async getLikes(@Args({ name: "postId", type: () => Int }) postId: number) {
+    return await this.postsService.getCountLikes(postId);
+  }
 }

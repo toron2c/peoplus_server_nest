@@ -11,12 +11,14 @@ import { UsersService } from "src/users/users.service";
 import { UpdatePostDto } from "./dto/update-post.dto";
 import { RemovePostDto } from "./dto/remove-post.dto";
 import { ChangeStateLikeDto } from "./dto/change-like-post.dto";
+import { CommentsService } from "src/comments/comments.service";
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly users: UsersService,
+    private readonly comments: CommentsService,
   ) {}
 
   /**
@@ -30,8 +32,14 @@ export class PostsService {
         authorId: data.profileId,
         text: data.text,
       },
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
     });
-
     return post;
   }
 
@@ -46,9 +54,7 @@ export class PostsService {
       take: count,
       skip: data.page ? data.page * count : 0,
     };
-    console.log(data, limit);
     const posts = await this.getAllPosts(data.authorId, limit);
-
     return posts;
   }
 
@@ -58,7 +64,11 @@ export class PostsService {
    * @returns count posts
    */
   async getCountPosts(profileId: number): Promise<number> {
-    const count = (await this.getAllPosts(profileId)).length;
+    const count = await this.prisma.post.count({
+      where: {
+        authorId: profileId,
+      },
+    });
     return count ? count : 0;
   }
 
@@ -75,6 +85,14 @@ export class PostsService {
       },
       data: {
         text: data.text,
+        edited: true,
+      },
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
       },
     });
     return post;
@@ -94,31 +112,45 @@ export class PostsService {
   }
 
   async changeLikesPost(data: ChangeStateLikeDto) {
-    const like = await this.prisma.likes.findFirst({
+    const like = await this.prisma.likes.findUnique({
       where: {
-        userId: data.profileId,
-        postId: data.postId,
+        userId_postId: {
+          userId: data.profileId,
+          postId: data.postId,
+        },
       },
     });
-
     if (like) {
-      const b = await this.prisma.likes.delete({
+      await this.prisma.likes.delete({
         where: {
-          id: like.id,
+          userId_postId: {
+            userId: data.profileId,
+            postId: data.postId,
+          },
         },
       });
-      console.log(b);
       return 0;
     } else {
-      const s = await this.prisma.likes.create({
+      await this.prisma.likes.create({
         data: {
-          userId: data.postId,
+          userId: data.profileId,
           postId: data.postId,
         },
       });
-      console.log(s);
       return 1;
     }
+  }
+  //maybe enough func with get likes
+  async getCountLikes(postId: number) {
+    const likes = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      select: {
+        likes: true,
+      },
+    });
+    return likes?.likes?.length ? likes.likes.length : 0;
   }
 
   /**
@@ -136,6 +168,13 @@ export class PostsService {
         authorId: profileId,
       },
       ...limit,
+      include: {
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
     });
     return posts;
   }

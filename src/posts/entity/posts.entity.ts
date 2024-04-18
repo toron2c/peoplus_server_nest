@@ -5,11 +5,18 @@ export class PostId {
   @Field(() => Int)
   id: number;
 }
+@ObjectType()
+export class _count {
+  @Field(() => Int)
+  likes: number;
+}
 
 @ObjectType()
 export class Post extends PostId {
   @Field()
   createdAt: Date;
+  @Field()
+  edited: boolean;
 
   @Field({ nullable: true })
   updatedAt: Date | null;
@@ -17,7 +24,10 @@ export class Post extends PostId {
   @Field()
   text: string;
 
-  // array with comments or number comments
+  @Field(() => Int)
+  authorId: number;
+  @Field()
+  _count: _count;
 }
 
 @ObjectType()
