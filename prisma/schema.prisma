@@ -1,0 +1,97 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [pgcrypto]
+}
+
+model User {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String   @unique
+  password  String
+  profile   Profile?
+  profileId Int?
+  // Posts     Post[]
+  // Table    Table[]
+  // Comments Comments[]
+}
+
+model Profile {
+  id       Int       @id @default(autoincrement())
+  bio      String    @default("")
+  name     String    @default("anonymous")
+  birthday DateTime?
+
+  userId String @unique @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+
+  likes    Likes[]
+  posts    Post[]
+  comments Comment[]
+  tables   Table[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  text      String
+  edited    Boolean  @default(false)
+
+  authorId Int
+  likes    Likes[]
+
+  author Profile @relation(fields: [authorId], references: [id])
+
+  comments Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  text      String
+  edited    Boolean  @default(false)
+
+  postId   Int
+  authorId Int
+
+  Post   Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author Profile @relation(fields: [authorId], references: [id])
+}
+
+model Table {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  private   Boolean
+  title     String
+  text      String
+
+  authorId Int     @unique
+  author   Profile @relation(fields: [authorId], references: [id])
+
+  stylesId Int   @unique
+  styles   Style @relation(fields: [stylesId], references: [id])
+}
+
+model Style {
+  id     Int    @id @default(autoincrement())
+  styles String
+  table  Table?
+}
+
+model Likes {
+  userId Int
+  postId Int
+
+  user Profile @relation(fields: [userId], references: [id])
+  post Post    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postId])
+}
