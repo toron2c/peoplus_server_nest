@@ -9,7 +9,7 @@ import { PrismaService } from "./prisma/prisma.service";
 import { UsersModule } from "./users/users.module";
 import { ConfigModule } from "@nestjs/config";
 import { PostsModule } from "./posts/posts.module";
-import { CommentsModule } from './comments/comments.module';
+import { CommentsModule } from "./comments/comments.module";
 
 @Module({
   imports: [
